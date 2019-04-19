@@ -12,7 +12,7 @@ func TestMain(m *testing.M) {
 	todoStore = TodoStore{}
 	retCode := m.Run()
 	db.Close()
-	// os.Remove("test.db")
+	os.Remove("test.db")
 	os.Exit(retCode)
 }
 
@@ -58,5 +58,23 @@ func TestTodoCreateMultipleSuccess(t *testing.T) {
 	}
 	if len(todos) != 2 {
 		log.Fatalf("Expected exactly 2 Todos")
+	}
+}
+
+func TestTodoGetWithMultipleUsersOnlyGetOne(t *testing.T) {
+	todo := Todo{
+		Todo:      "Test",
+		CreatedAt: time.Now(),
+		Completed: false,
+	}
+	_, err := todoStore.CreateTodo("testa@domain.com", todo)
+	_, err = todoStore.CreateTodo("testb@domain.com", todo)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	var todos []Todo
+	todos, err = todoStore.GetTodos("testa@domain.com")
+	if len(todos) > 1 {
+		t.Fatalf("Expected only 1 todo to be returned in database with 2 users")
 	}
 }

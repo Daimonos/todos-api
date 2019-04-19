@@ -10,11 +10,28 @@ import (
 
 // GetTodosHandler is a handler for managing Todos for a user
 func GetTodosHandler(w http.ResponseWriter, r *http.Request) {
-	var user User
-	if u := context.Get(r, "UserId"); u != nil {
+	u := context.Get(r, "UserId")
+	if u != nil {
 		WriteError(w, http.StatusUnauthorized, errors.New("Not Authorized"))
 		return
 	}
+	user := u.(User)
+	todos, err := todoStore.GetTodos(user.Email)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, todos)
+}
+
+// CreateTodosHandler handles the creation of todos for a user
+func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	u := context.Get(r, "UserId")
+	if u != nil {
+		WriteError(w, http.StatusUnauthorized, errors.New("Not Authorized"))
+		return
+	}
+	user := u.(User)
 	todos, err := todoStore.GetTodos(user.Email)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, err)
