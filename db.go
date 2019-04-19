@@ -15,16 +15,4 @@ func InitDB(filepath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists([]byte("users"))
-		if err != nil {
-			return err
-		}
-		_, err = tx.CreateBucketIfNotExists([]byte("todos"))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-
 }
