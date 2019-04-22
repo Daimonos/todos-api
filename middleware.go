@@ -30,7 +30,8 @@ func checkAuthentication(next http.HandlerFunc) http.HandlerFunc {
 		v := make(map[string]string)
 		v["token"] = token
 		log.Println("Validating Token")
-		resp, err := Post("http://localhost:8080/validateToken", v)
+		endpoint := getEnv("TODOS_AUTHSERVICE", "http://localhost:8080/validateToken")
+		resp, err := Post(endpoint, v)
 		if err != nil {
 			log.Println("Error validating Token")
 			log.Println(err.Error())
@@ -38,7 +39,7 @@ func checkAuthentication(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		if resp.StatusCode != 200 {
-			log.Println("Token Validated with error code")
+			log.Printf("Token Validated with error code: %d\n", resp.StatusCode)
 			WriteError(w, http.StatusUnauthorized, errors.New("Not Authenticated"))
 			return
 		}
