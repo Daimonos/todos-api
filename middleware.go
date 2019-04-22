@@ -9,26 +9,15 @@ import (
 	"github.com/gorilla/context"
 )
 
+// middleware is a helper type for handling our middlewares
 type middleware func(next http.HandlerFunc) http.HandlerFunc
 
+// AuthResponse is a struct representing the values coming from the User microservice
 type AuthResponse struct {
 	Payload User `json:"payload"`
 }
 
-func withLogging(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Logged connection from %s", r.RemoteAddr)
-		next.ServeHTTP(w, r)
-	}
-}
-
-func withTracing(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Tracing request for %s", r.RequestURI)
-		next.ServeHTTP(w, r)
-	}
-}
-
+// checkAuthentication is a piece of middleware that checks for and validates it against the user service
 func checkAuthentication(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("x-auth-token")
