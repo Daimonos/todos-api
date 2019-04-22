@@ -3,11 +3,25 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	log.Println("Hello, Todos API")
-	InitDB("todos-dev")
+	log.Println("Todos API Starting Up")
+	port := getEnv("TODOS_PORT", ":8080")
+	dbname := getEnv("TODOS_DBNAME", "todos-dev")
+	InitDB(dbname)
 	r := NewRouter()
-	log.Panic(http.ListenAndServe(":8081", r))
+	log.Println("App listneing onport: " + port)
+	log.Println("Db Name: " + dbname)
+	log.Panic(http.ListenAndServe(port, r))
+}
+
+func getEnv(variable, fallback string) string {
+	log.Println("Looing for environment variable: " + variable)
+	if value, ok := os.LookupEnv(variable); ok {
+		return value
+	}
+	log.Println("Returning default value: " + fallback)
+	return fallback
 }
