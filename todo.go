@@ -16,11 +16,12 @@ const TODOS_PREFIX = "TODOS-"
 var todoStore TodoStore
 
 type Todo struct {
+	ID          string    `json:"id"`
 	Todo        string    `json:"todo"`
 	Completed   bool      `json:"completed"`
 	CreatedAt   time.Time `json:"createdAt"`
 	CompletedAt time.Time `json:"completedAt"`
-	UserID      string    `json:"*"`
+	UserID      string    `json:"user"`
 }
 
 // GetTodos returns todos for a user
@@ -52,13 +53,15 @@ func (t *TodoStore) CreateTodo(email string, todo Todo) (Todo, error) {
 		if b == nil {
 			b, _ = tx.CreateBucket([]byte(TODOS_PREFIX + email))
 		}
+		sid := uuid.New().String()
+		todo.ID = sid
+		todo.CreatedAt = time.Now()
+		todo.Completed = false
+		todo.UserID = email
 		buf, err := json.Marshal(todo)
 		if err != nil {
 			return err
 		}
-		sid := uuid.New().String()
-		todo.CreatedAt = time.Now()
-		todo.Completed = false
 		err = b.Put([]byte(sid), buf)
 		return err
 	})
