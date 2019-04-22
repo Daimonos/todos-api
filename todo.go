@@ -12,9 +12,6 @@ import (
 // TodoStore is the struct for our todos store
 type TodoStore struct{}
 
-// TodosPrefix is the prefix for our todos buckets for our users
-const TodosPrefix = "TODOS-"
-
 var todoStore TodoStore
 
 // Todo is the struct for our todos
@@ -31,7 +28,7 @@ type Todo struct {
 func (t *TodoStore) GetTodos(email string) ([]Todo, error) {
 	todos := []Todo{}
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(TodosPrefix + email))
+		b := tx.Bucket([]byte(email))
 		if b == nil {
 			return errors.New("bucket does not exist")
 		}
@@ -52,9 +49,9 @@ func (t *TodoStore) GetTodos(email string) ([]Todo, error) {
 // CreateTodo creates a new Todo
 func (t *TodoStore) CreateTodo(email string, todo Todo) (Todo, error) {
 	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(TodosPrefix + email))
+		b := tx.Bucket([]byte(email))
 		if b == nil {
-			b, _ = tx.CreateBucket([]byte(TodosPrefix + email))
+			b, _ = tx.CreateBucket([]byte(email))
 		}
 		sid := uuid.New().String()
 		todo.ID = sid
