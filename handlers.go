@@ -10,11 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Payload struct {
-	ErrorCode    int
-	ErrorMessage string
-}
-
 // GetTodosHandler is a handler for managing Todos for a user
 func GetTodosHandler(w http.ResponseWriter, r *http.Request) {
 	u := context.Get(r, "User")

@@ -9,7 +9,7 @@ import (
 func main() {
 	log.Println("Todos API Starting Up")
 	port := getEnv("TODOS_PORT", ":80")
-	dbname := getEnv("TODOS_DBNAME", "todos-dev")
+	dbname := getEnv("TODOS_DBNAME", "todos-dev.db")
 	InitDB(dbname)
 	r := NewRouter()
 	log.Println("App listneing onport: " + port)

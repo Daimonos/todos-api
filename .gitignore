@@ -2,3 +2,5 @@
 *.db
 todos-api
 todos-dev
+*.exe
+jdhc-todos-api*
