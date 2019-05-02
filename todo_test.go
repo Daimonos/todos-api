@@ -78,3 +78,24 @@ func TestTodoGetWithMultipleUsersOnlyGetOne(t *testing.T) {
 		t.Fatalf("Expected only 1 todo to be returned in database with 2 users")
 	}
 }
+
+func TestUpdateTodo(t *testing.T) {
+	originalTodoText := "Testing Updating a Todo"
+	updatedTodoText := "Updated Todo Text"
+	todo := Todo{
+		Todo:      originalTodoText,
+		CreatedAt: time.Now(),
+		Completed: false,
+	}
+	var err error
+	todo, err = todoStore.CreateTodo("test@domain.com", todo)
+	todo.Todo = updatedTodoText
+	todo, err = todoStore.UpdateTodo("test@domain.com", todo.ID, todo)
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	if todo.Todo != updatedTodoText {
+		t.Fatalf("Expected Todo text to be : %s but got: %s\n", updatedTodoText, todo.Todo)
+	}
+}

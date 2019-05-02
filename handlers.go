@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 )
 
 type Payload struct {
@@ -17,10 +18,6 @@ type Payload struct {
 // GetTodosHandler is a handler for managing Todos for a user
 func GetTodosHandler(w http.ResponseWriter, r *http.Request) {
 	u := context.Get(r, "User")
-	if u == nil {
-		WriteError(w, http.StatusUnauthorized, errors.New("Not Authorized"))
-		return
-	}
 	user := u.(User)
 	todos, err := todoStore.GetTodos(user.Email)
 	if err != nil {
@@ -33,10 +30,6 @@ func GetTodosHandler(w http.ResponseWriter, r *http.Request) {
 // CreateTodoHandler handles the creation of todos for a user
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	u := context.Get(r, "User")
-	if u == nil {
-		WriteError(w, http.StatusUnauthorized, errors.New("Not Authorized"))
-		return
-	}
 	log.Println(u)
 	user := u.(User)
 	log.Println("Creating TODO for user: " + user.Email)
@@ -53,6 +46,32 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	WriteJSON(w, http.StatusOK, todo)
+}
+
+//UpdateTodoHandler handles the web request for updating a todo
+func UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	u := context.Get(r, "User")
+	user := u.(User)
+	vars := mux.Vars(r)
+	id := vars["id"]
+	if id == "" {
+		WriteError(w, http.StatusBadRequest, errors.New("No Todo ID Provided"))
+		return
+	}
+	var todo Todo
+	defer r.Body.Close()
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&todo); err != nil {
+		WriteError(w, http.StatusInternalServerError, errors.New("Error decoding todo from request body"))
+		return
+	}
+	t, err := todoStore.UpdateTodo(user.Email, id, todo)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, t)
+
 }
 
 // WriteJSON is a helper function for writing JSON content

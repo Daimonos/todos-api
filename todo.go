@@ -67,3 +67,26 @@ func (t *TodoStore) CreateTodo(email string, todo Todo) (Todo, error) {
 	})
 	return todo, err
 }
+
+// UpdateTodo updates a todo for a given user by it's id
+func (t *TodoStore) UpdateTodo(email string, id string, todo Todo) (Todo, error) {
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(email))
+		if b == nil {
+			return errors.New("Bucket does not exist for user: " + email)
+		}
+		if todo.Completed == true {
+			todo.CompletedAt = time.Now()
+		}
+		buf, err := json.Marshal(todo)
+		if err != nil {
+			return err
+		}
+		err = b.Put([]byte(id), buf)
+		if err != nil {
+			return nil
+		}
+		return nil
+	})
+	return todo, err
+}
