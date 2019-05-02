@@ -66,7 +66,24 @@ func UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	WriteJSON(w, http.StatusOK, t)
+}
 
+// DeleteTodoHandler handles the web request for deleting a todo
+func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
+	u := context.Get(r, "User")
+	user := u.(User)
+	vars := mux.Vars(r)
+	id := vars["id"]
+	if id == "" {
+		WriteError(w, http.StatusBadRequest, errors.New("ID is required"))
+		return
+	}
+	err := todoStore.DeleteTodo(user.Email, id)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, "OK")
 }
 
 // WriteJSON is a helper function for writing JSON content

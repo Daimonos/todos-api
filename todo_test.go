@@ -99,3 +99,15 @@ func TestUpdateTodo(t *testing.T) {
 		t.Fatalf("Expected Todo text to be : %s but got: %s\n", updatedTodoText, todo.Todo)
 	}
 }
+
+func TestDeleteTodo(t *testing.T) {
+	todo := Todo{
+		Todo: "A todo to delete",
+	}
+	newTodo, err := todoStore.CreateTodo("someuser@somedomain.com", todo)
+	err = todoStore.DeleteTodo("someuser@somedomain.com", newTodo.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+}

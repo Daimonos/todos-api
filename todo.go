@@ -84,9 +84,21 @@ func (t *TodoStore) UpdateTodo(email string, id string, todo Todo) (Todo, error)
 		}
 		err = b.Put([]byte(id), buf)
 		if err != nil {
-			return nil
+			return err
 		}
 		return nil
 	})
 	return todo, err
+}
+
+// DeleteTodo handle the deletion of a todo by id for a given user
+func (t *TodoStore) DeleteTodo(email string, id string) error {
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(email))
+		if b == nil {
+			return errors.New("Bucket does not exist for user: " + email)
+		}
+		return b.Delete([]byte(id))
+	})
+	return err
 }
