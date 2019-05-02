@@ -2,4 +2,7 @@ FROM scratch
 ADD main /
 VOLUME /data
 EXPOSE 80
+ENV TODOS_PORT=8000
+ENV TODOS_DBNAME=todos.default.db
+ENV TODOS_AUTHSERVICE=http://localhost:8081/validateToken
 CMD ["/main"]
