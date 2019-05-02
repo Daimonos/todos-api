@@ -9,7 +9,7 @@ func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/api/v1/todos", chainMiddleware(GetTodosHandler, checkAuthentication)).Methods("GET")
 	r.HandleFunc("/api/v1/todos", chainMiddleware(CreateTodoHandler, checkAuthentication)).Methods("POST")
-	r.HandleFunc("/api/v1/todos/:id", chainMiddleware(UpdateTodoHandler, checkAuthentication)).Methods("PUT")
-	r.HandleFunc("/api/v1/todos/:id", chainMiddleware(DeleteTodoHandler, checkAuthentication)).Methods("DELETE")
+	r.HandleFunc("/api/v1/todos/{id}", chainMiddleware(UpdateTodoHandler, checkAuthentication)).Methods("PUT")
+	r.HandleFunc("/api/v1/todos/{id}", chainMiddleware(DeleteTodoHandler, checkAuthentication)).Methods("DELETE")
 	return r
 }
